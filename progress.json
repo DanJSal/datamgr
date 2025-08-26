@@ -1,4 +1,6 @@
 {
+  "current": [],
+  "current_updated_at": "",
   "modules": {
     "datamgr/__init__.py": {
       "notes": [
@@ -189,24 +191,29 @@
     },
     "tests/integration": {
       "notes": [
+        "Repo-level integration tests; will add after storage/services skeletons",
         "Repo-level integration tests; will add after storage/services skeletons"
       ],
       "status": "pending",
-      "updated_at": "2025-08-26T22:55:49Z"
+      "updated_at": "2025-08-27T01:35:58Z"
     },
     "tests/unit": {
       "notes": [
+        "Repo-level unit tests; will add cases after core skeletons",
         "Repo-level unit tests; will add cases after core skeletons"
       ],
       "status": "pending",
-      "updated_at": "2025-08-26T22:55:38Z"
+      "updated_at": "2025-08-27T01:35:51Z"
     }
   },
+  "next": [],
+  "next_updated_at": "",
   "statuses": [
     "pending",
     "skeleton",
     "impl",
     "tested",
     "docs"
-  ]
+  ],
+  "updated_at": "2025-08-27T01:35:58Z"
 }
