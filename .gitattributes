@@ -1,0 +1,21 @@
+# .gitattributes (repo root)
+* text=auto eol=lf
+
+# common text types
+*.py  text eol=lf
+*.md  text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# binaries you may add later
+*.h5        binary
+*.h5.enc    binary
+*.sqlite    binary
+*.sqlite3   binary
+*.db        binary
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.pdf       binary

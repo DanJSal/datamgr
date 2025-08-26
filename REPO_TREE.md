@@ -1,24 +1,22 @@
 # Repository Tree
 
-_Updated: 2025-08-27T01:55:07Z_
+_Updated: 2025-08-27T03:50:24Z_
 
-Root: `/home/djs421/PycharmProjects/datamgr`
+Root: `datamgr`
 
 ## CLI Reference
 
 ```text
-usage: dump_tree.py [-h] [--root ROOT] [--output OUTPUT] [--max-depth MAX_DEPTH] [--include-hidden] [--ignore IGNORE]
+usage: python tools/dump_tree.py [-h] [--root ROOT] [--out OUT] [--max-depth MAX_DEPTH]
 
 Write REPO_TREE.md with a file tree snapshot of the repository.
 
 options:
   -h, --help            show this help message and exit
-  --root ROOT           Repository root to scan. (default: /home/djs421/PycharmProjects/datamgr)
-  --output OUTPUT       Output Markdown path. (default: /home/djs421/PycharmProjects/datamgr/REPO_TREE.md)
+  --root ROOT           Repository root to scan. (default: C:\Users\Daniel\PycharmProjects\datamgr)
+  --out OUT             Output Markdown path. (default: C:\Users\Daniel\PycharmProjects\datamgr\REPO_TREE.md)
   --max-depth MAX_DEPTH
-                        Limit depth (-1 = unlimited). (default: -1)
-  --include-hidden      Include dotfiles/directories. (default: False)
-  --ignore IGNORE       Extra names to ignore (repeatable). (default: [])
+                        Maximum directory depth (-1 = unlimited). (default: -1)
 ```
 ## Tree
 
@@ -59,14 +57,18 @@ datamgr
 ├── legacy
 │   └── datamgr
 │       ├── pysqlite3-wal2-wheels
-│       │   ├── sqlite-wal2-amalgamation
-│       │   ├── wheels-linux-manylinux-aarch64
-│       │   ├── wheels-linux-manylinux-x86_64
-│       │   ├── wheels-linux-musllinux-aarch64
-│       │   ├── wheels-linux-musllinux-x86_64
-│       │   ├── wheels-macos-arm64
-│       │   ├── wheels-macos-x86_64
-│       │   └── wheels-windows-amd64
+│       │   └── .extracted
+│       │       └── pysqlite3-0.5.4-cp39-cp39-win_amd64-887819-1756091981
+│       │           ├── pysqlite3
+│       │           │   ├── __init__.py
+│       │           │   └── dbapi2.py
+│       │           └── pysqlite3-0.5.4.dist-info
+│       │               ├── licenses
+│       │               │   └── LICENSE
+│       │               ├── METADATA
+│       │               ├── RECORD
+│       │               ├── top_level.txt
+│       │               └── WHEEL
 │       ├── __init__.py
 │       ├── affinity_ingest.py
 │       ├── atoms.py
