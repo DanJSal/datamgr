@@ -1,0 +1,212 @@
+{
+  "modules": {
+    "datamgr/__init__.py": {
+      "notes": [
+        "Top-level package stub; will re-export public facade later"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:50:24Z"
+    },
+    "datamgr/api/__init__.py": {
+      "notes": [
+        "API/CLI/Navigator package stub"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:51:23Z"
+    },
+    "datamgr/api/cli.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:27Z"
+    },
+    "datamgr/api/manager.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:27Z"
+    },
+    "datamgr/api/navigator.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:27Z"
+    },
+    "datamgr/core/__init__.py": {
+      "notes": [
+        "Core package re-exports for errors/schema/keys/jagged/hashing/plan"
+      ],
+      "status": "skeleton",
+      "updated_at": "2025-08-26T22:44:45Z"
+    },
+    "datamgr/core/errors.py": {
+      "notes": [
+        "exceptions skeleton"
+      ],
+      "status": "skeleton",
+      "updated_at": "2025-08-26T22:26:23Z"
+    },
+    "datamgr/core/hashing.py": {
+      "notes": [
+        "queued for skeletonization",
+        "ContentHasher + PartStats + AAD builder skeleton"
+      ],
+      "status": "skeleton",
+      "updated_at": "2025-08-26T22:41:32Z"
+    },
+    "datamgr/core/jagged.py": {
+      "notes": [
+        "queued for skeletonization",
+        "JaggedNormalizer + padding plan/result signatures"
+      ],
+      "status": "skeleton",
+      "updated_at": "2025-08-26T22:39:41Z"
+    },
+    "datamgr/core/keys.py": {
+      "notes": [
+        "queued for skeletonization"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:26:45Z"
+    },
+    "datamgr/core/plan.py": {
+      "notes": [
+        "queued for skeletonization",
+        "PlanIR + rewrite/prune/cost/order interfaces"
+      ],
+      "status": "skeleton",
+      "updated_at": "2025-08-26T22:43:22Z"
+    },
+    "datamgr/core/schema.py": {
+      "notes": [
+        "queued for skeletonization",
+        "SchemaModel + canonical dtype helpers skeleton",
+        "SchemaModel + canonical dtype helpers skeleton"
+      ],
+      "status": "skeleton",
+      "updated_at": "2025-08-26T22:35:07Z"
+    },
+    "datamgr/services/__init__.py": {
+      "notes": [
+        "Services (ingest/merge/planner/migrate) package stub"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:51:11Z"
+    },
+    "datamgr/services/ingest.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:14Z"
+    },
+    "datamgr/services/merge.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:14Z"
+    },
+    "datamgr/services/migrate.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:14Z"
+    },
+    "datamgr/services/planner.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:14Z"
+    },
+    "datamgr/storage/__init__.py": {
+      "notes": [
+        "Storage adapters package stub"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:50:55Z"
+    },
+    "datamgr/storage/catalog_sqlite.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:04Z"
+    },
+    "datamgr/storage/part_store_h5.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:04Z"
+    },
+    "datamgr/storage/sqlite_loader.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:04Z"
+    },
+    "datamgr/util/__init__.py": {
+      "notes": [
+        "Utilities (fs/events/config/warnings) package stub"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:51:37Z"
+    },
+    "datamgr/util/config.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:40Z"
+    },
+    "datamgr/util/events.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:40Z"
+    },
+    "datamgr/util/fs.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:40Z"
+    },
+    "datamgr/util/warnings.py": {
+      "notes": [
+        "initial scaffold"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:27:40Z"
+    },
+    "tests/integration": {
+      "notes": [
+        "Repo-level integration tests; will add after storage/services skeletons"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:55:49Z"
+    },
+    "tests/unit": {
+      "notes": [
+        "Repo-level unit tests; will add cases after core skeletons"
+      ],
+      "status": "pending",
+      "updated_at": "2025-08-26T22:55:38Z"
+    }
+  },
+  "statuses": [
+    "pending",
+    "skeleton",
+    "impl",
+    "tested",
+    "docs"
+  ]
+}
