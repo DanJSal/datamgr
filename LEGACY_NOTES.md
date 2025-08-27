@@ -1,6 +1,6 @@
 # LEGACY_NOTES
 
-**Purpose:** Quick reference to implementation details in the old `datamgr` code that remain useful while we refactor per SPEC.md. The SPEC is authoritative for behavior; this file only points at reusable idioms and concrete patterns from the legacy code.
+**Purpose:** Quick reference to implementation details in the old `datamgr` code (which is located in `legacy` subdirectory) that remain useful while we refactor per SPEC.md. The SPEC is authoritative for behavior; this file only points at reusable idioms and concrete patterns from the legacy code.
 
 > **Do not copy semantics blindly.** SPEC introduces key changes (identity via specials+quantization, jagged meta, encryption hooks). Use legacy code for hashing/HDF5/FS safety patterns and pragmatic details.
 
