@@ -1,215 +1,161 @@
 {
-  "current": [
-    "storage: PartStore skeleton",
-    "services: IngestService skeleton"
-  ],
-  "current_updated_at": "2025-08-27T03:35:27Z",
+  "current": [],
+  "current_updated_at": "",
   "modules": {
     "datamgr/__init__.py": {
-      "notes": [
-        "Top-level package stub; will re-export public facade later"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:50:24Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/api/__init__.py": {
-      "notes": [
-        "API/CLI/Navigator package stub"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:51:23Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/api/cli.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:27Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/api/manager.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:27Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/api/navigator.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:27Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/core/__init__.py": {
-      "notes": [
-        "Core package re-exports for errors/schema/keys/jagged/hashing/plan"
-      ],
-      "status": "skeleton",
-      "updated_at": "2025-08-26T22:44:45Z"
+      "notes": [],
+      "status": "pending",
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/core/errors.py": {
-      "notes": [
-        "exceptions skeleton"
-      ],
-      "status": "skeleton",
-      "updated_at": "2025-08-26T22:26:23Z"
+      "notes": [],
+      "status": "pending",
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/core/hashing.py": {
-      "notes": [
-        "queued for skeletonization",
-        "ContentHasher + PartStats + AAD builder skeleton"
-      ],
-      "status": "skeleton",
-      "updated_at": "2025-08-26T22:41:32Z"
+      "notes": [],
+      "status": "pending",
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/core/jagged.py": {
-      "notes": [
-        "queued for skeletonization",
-        "JaggedNormalizer + padding plan/result signatures"
-      ],
-      "status": "skeleton",
-      "updated_at": "2025-08-26T22:39:41Z"
+      "notes": [],
+      "status": "pending",
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/core/keys.py": {
-      "notes": [
-        "queued for skeletonization"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:26:45Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/core/plan.py": {
-      "notes": [
-        "queued for skeletonization",
-        "PlanIR + rewrite/prune/cost/order interfaces"
-      ],
-      "status": "skeleton",
-      "updated_at": "2025-08-26T22:43:22Z"
+      "notes": [],
+      "status": "pending",
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/core/schema.py": {
-      "notes": [
-        "queued for skeletonization",
-        "SchemaModel + canonical dtype helpers skeleton",
-        "SchemaModel + canonical dtype helpers skeleton"
-      ],
-      "status": "skeleton",
-      "updated_at": "2025-08-26T22:35:07Z"
+      "notes": [],
+      "status": "pending",
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/services/__init__.py": {
-      "notes": [
-        "Services (ingest/merge/planner/migrate) package stub"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:51:11Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/services/ingest.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:14Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/services/merge.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:14Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/services/migrate.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:14Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/services/planner.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:14Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/storage/__init__.py": {
-      "notes": [
-        "Storage adapters package stub"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:50:55Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/storage/catalog_sqlite.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:04Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/storage/part_store_h5.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:04Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/storage/sqlite_loader.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:04Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/util/__init__.py": {
-      "notes": [
-        "Utilities (fs/events/config/warnings) package stub"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:51:37Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/util/config.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:40Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/util/events.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:40Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/util/fs.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:40Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
     "datamgr/util/warnings.py": {
-      "notes": [
-        "initial scaffold"
-      ],
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-26T22:27:40Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
-    "tests/integration": {
-      "notes": [
-        "Repo-level integration tests; will add after storage/services skeletons",
-        "Repo-level integration tests; will add after storage/services skeletons"
-      ],
+    "tests/integration/test_placeholder.py": {
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-27T01:35:58Z"
+      "updated_at": "2025-08-27T15:18:25Z"
     },
-    "tests/unit": {
-      "notes": [
-        "Repo-level unit tests; will add cases after core skeletons",
-        "Repo-level unit tests; will add cases after core skeletons"
-      ],
+    "tests/test_placeholder.py": {
+      "notes": [],
       "status": "pending",
-      "updated_at": "2025-08-27T01:35:51Z"
+      "updated_at": "2025-08-27T15:18:25Z"
+    },
+    "tests/unit/test_placeholder.py": {
+      "notes": [],
+      "status": "pending",
+      "updated_at": "2025-08-27T15:18:25Z"
     }
   },
-  "next": [
-    "storage: DatasetCatalog skeleton"
+  "next": [],
+  "next_updated_at": "",
+  "statuses": [
+    "pending",
+    "skeleton",
+    "impl",
+    "tested",
+    "docs"
   ],
-  "next_updated_at": 
+  "updated_at": "2025-08-27T15:18:25Z"
+}

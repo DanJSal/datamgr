@@ -1,18 +1,15 @@
 # Progress
 
-_Updated: 2025-08-27T03:35:44Z_
-
 ## CLI Reference
 
 ```text
-usage: python tools/tick_progress.py [-h] [--status STATUS] [--note NOTE] [--force] [--render-only] [--set-current ITEM [ITEM ...]] [--set-next ITEM [ITEM ...]]
-                                     [--promote]
-                                     [paths ...]
+usage: python tools/progress.py [-h] [--status STATUS] [--note NOTE] [--force] [--render-only] [--set-current ITEM [ITEM ...]] [--set-next ITEM [ITEM ...]] [--promote]
+                                [path]
 
-Tick progress and regenerate PROGRESS.md
+Update progress and regenerate PROGRESS.md
 
 positional arguments:
-  paths                 Paths to tick (files or dirs). (default: None)
+  path                  Path to a single file to update. (default: None)
 
 options:
   -h, --help            show this help message and exit
@@ -29,22 +26,17 @@ options:
 
 ## Current
 
-_Updated: 2025-08-27T03:35:27Z_
-
-- storage: PartStore skeleton
-- services: IngestService skeleton
+- (none)
 
 ## Next
 
-_Updated: 2025-08-27T03:35:44Z_
-
-- storage: DatasetCatalog skeleton
+- (none)
 
 ## Status Summary
 
 Flow: `pending → skeleton → impl → tested → docs`
 
-**Overall:** **pending**: 22 (78.6%) | **skeleton**: 6 (21.4%) | **impl**: 0 (0.0%) | **tested**: 0 (0.0%) | **docs**: 0 (0.0%)
+**Overall:** **pending**: 29 (100.0%) | **skeleton**: 0 (0.0%) | **impl**: 0 (0.0%) | **tested**: 0 (0.0%) | **docs**: 0 (0.0%)
 
 ## By Area
 
@@ -52,62 +44,44 @@ Flow: `pending → skeleton → impl → tested → docs`
 
 | Module | Status | Updated |
 |---|---|---|
-| `datamgr/__init__.py` | `pending` | 2025-08-26T22:50:24Z |
-| `datamgr/api/__init__.py` | `pending` | 2025-08-26T22:51:23Z |
-| `datamgr/api/cli.py` | `pending` | 2025-08-26T22:27:27Z |
-| `datamgr/api/manager.py` | `pending` | 2025-08-26T22:27:27Z |
-| `datamgr/api/navigator.py` | `pending` | 2025-08-26T22:27:27Z |
-| `datamgr/core/__init__.py` | `skeleton` | 2025-08-26T22:44:45Z |
-| `datamgr/core/errors.py` | `skeleton` | 2025-08-26T22:26:23Z |
-| `datamgr/core/hashing.py` | `skeleton` | 2025-08-26T22:41:32Z |
-| `datamgr/core/jagged.py` | `skeleton` | 2025-08-26T22:39:41Z |
-| `datamgr/core/keys.py` | `pending` | 2025-08-26T22:26:45Z |
-| `datamgr/core/plan.py` | `skeleton` | 2025-08-26T22:43:22Z |
-| `datamgr/core/schema.py` | `skeleton` | 2025-08-26T22:35:07Z |
-| `datamgr/services/__init__.py` | `pending` | 2025-08-26T22:51:11Z |
-| `datamgr/services/ingest.py` | `pending` | 2025-08-26T22:27:14Z |
-| `datamgr/services/merge.py` | `pending` | 2025-08-26T22:27:14Z |
-| `datamgr/services/migrate.py` | `pending` | 2025-08-26T22:27:14Z |
-| `datamgr/services/planner.py` | `pending` | 2025-08-26T22:27:14Z |
-| `datamgr/storage/__init__.py` | `pending` | 2025-08-26T22:50:55Z |
-| `datamgr/storage/catalog_sqlite.py` | `pending` | 2025-08-26T22:27:04Z |
-| `datamgr/storage/part_store_h5.py` | `pending` | 2025-08-26T22:27:04Z |
-| `datamgr/storage/sqlite_loader.py` | `pending` | 2025-08-26T22:27:04Z |
-| `datamgr/util/__init__.py` | `pending` | 2025-08-26T22:51:37Z |
-| `datamgr/util/config.py` | `pending` | 2025-08-26T22:27:40Z |
-| `datamgr/util/events.py` | `pending` | 2025-08-26T22:27:40Z |
-| `datamgr/util/fs.py` | `pending` | 2025-08-26T22:27:40Z |
-| `datamgr/util/warnings.py` | `pending` | 2025-08-26T22:27:40Z |
+| `datamgr/__init__.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/api/__init__.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/api/cli.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/api/manager.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/api/navigator.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/core/__init__.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/core/errors.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/core/hashing.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/core/jagged.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/core/keys.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/core/plan.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/core/schema.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/services/__init__.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/services/ingest.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/services/merge.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/services/migrate.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/services/planner.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/storage/__init__.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/storage/catalog_sqlite.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/storage/part_store_h5.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/storage/sqlite_loader.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/util/__init__.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/util/config.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/util/events.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/util/fs.py` | `pending` | 2025-08-27T15:18:25Z |
+| `datamgr/util/warnings.py` | `pending` | 2025-08-27T15:18:25Z |
 
 ### tests
 
 | Module | Status | Updated |
 |---|---|---|
-| `tests/integration` | `pending` | 2025-08-27T01:35:58Z |
-| `tests/unit` | `pending` | 2025-08-27T01:35:51Z |
+| `tests/integration/test_placeholder.py` | `pending` | 2025-08-27T15:18:25Z |
+| `tests/test_placeholder.py` | `pending` | 2025-08-27T15:18:25Z |
+| `tests/unit/test_placeholder.py` | `pending` | 2025-08-27T15:18:25Z |
 
 ## Latest Notes
 
 | Updated | Module | Status | Note |
 |---|---|---|---|
-| `2025-08-27T01:35:58Z` | `tests/integration` | `pending` | Repo-level integration tests; will add after storage/services skeletons |
-| `2025-08-27T01:35:51Z` | `tests/unit` | `pending` | Repo-level unit tests; will add cases after core skeletons |
-| `2025-08-26T22:51:37Z` | `datamgr/util/__init__.py` | `pending` | Utilities (fs/events/config/warnings) package stub |
-| `2025-08-26T22:51:23Z` | `datamgr/api/__init__.py` | `pending` | API/CLI/Navigator package stub |
-| `2025-08-26T22:51:11Z` | `datamgr/services/__init__.py` | `pending` | Services (ingest/merge/planner/migrate) package stub |
-| `2025-08-26T22:50:55Z` | `datamgr/storage/__init__.py` | `pending` | Storage adapters package stub |
-| `2025-08-26T22:50:24Z` | `datamgr/__init__.py` | `pending` | Top-level package stub; will re-export public facade later |
-| `2025-08-26T22:44:45Z` | `datamgr/core/__init__.py` | `skeleton` | Core package re-exports for errors/schema/keys/jagged/hashing/plan |
-| `2025-08-26T22:43:22Z` | `datamgr/core/plan.py` | `skeleton` | PlanIR + rewrite/prune/cost/order interfaces |
-| `2025-08-26T22:41:32Z` | `datamgr/core/hashing.py` | `skeleton` | ContentHasher + PartStats + AAD builder skeleton |
-| `2025-08-26T22:39:41Z` | `datamgr/core/jagged.py` | `skeleton` | JaggedNormalizer + padding plan/result signatures |
-| `2025-08-26T22:35:07Z` | `datamgr/core/schema.py` | `skeleton` | SchemaModel + canonical dtype helpers skeleton |
-| `2025-08-26T22:27:40Z` | `datamgr/util/config.py` | `pending` | initial scaffold |
-| `2025-08-26T22:27:40Z` | `datamgr/util/events.py` | `pending` | initial scaffold |
-| `2025-08-26T22:27:40Z` | `datamgr/util/fs.py` | `pending` | initial scaffold |
-| `2025-08-26T22:27:40Z` | `datamgr/util/warnings.py` | `pending` | initial scaffold |
-| `2025-08-26T22:27:27Z` | `datamgr/api/cli.py` | `pending` | initial scaffold |
-| `2025-08-26T22:27:27Z` | `datamgr/api/manager.py` | `pending` | initial scaffold |
-| `2025-08-26T22:27:27Z` | `datamgr/api/navigator.py` | `pending` | initial scaffold |
-| `2025-08-26T22:27:14Z` | `datamgr/services/ingest.py` | `pending` | initial scaffold |
+_No notes yet. Add one with `--note`._
 

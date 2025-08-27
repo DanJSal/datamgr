@@ -1,3 +1,4 @@
-# This file was created by tools/scaffold.py on 2025-08-26T21:07:02.002730Z.
-# Minimal placeholder only. We will populate real skeletons next.
-"""DatasetCatalog adapter (DDL, CRUD, meta/data) (SPEC §4, §9)."""
+"""Placeholder module. Populate per SPEC.md (skeleton-first).
+"""
+__all__: list[str] = []
+raise NotImplementedError("stub")
