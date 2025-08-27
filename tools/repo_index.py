@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Generate REPO_INDEX.md from GitHub's repo tree.
+"""Generate a clickable HTML index for the repo (for GitHub Pages).
 
 - Uses the Git Data API (recursive tree) as the source of truth.
-- Emits a clickable index with Blob + Raw links.
-- **Permalink:** Blob/Raw links (and the API fetch) are pinned to the
-  current commit SHA; the header shows the branch label and links to its tree.
+- Emits docs/index.html with Blob + Raw links for every tracked file.
+- Permalink mode: links (and the API fetch) are pinned to the current commit SHA.
+- The header shows the branch label and links to the live GitHub tree for that branch.
 """
 from __future__ import annotations
 import json
@@ -17,7 +17,7 @@ from urllib.parse import quote as urlquote
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "REPO_INDEX.md"
+OUT_HTML = ROOT / "docs" / "index.html"
 
 def _now_iso() -> str:
     """Return current UTC time in ISO-8601 (Z) format."""
@@ -56,17 +56,9 @@ def _detect_repo_info(root: Path) -> tuple[str, str, str]:
     ref = os.environ.get("GITHUB_REF_NAME") or _git(root, "rev-parse", "--abbrev-ref", "HEAD") or "main"
     return owner, repo, ref
 
-def _group_by_top(paths: Iterable[str]) -> dict[str, list[str]]:
-    """Group file paths by their first path segment."""
-    buckets: dict[str, list[str]] = {}
-    for p in paths:
-        top = p.split("/", 1)[0]
-        buckets.setdefault(top, []).append(p)
-    return buckets
-
 def _gh_tree(owner: str, repo: str, ref: str) -> dict:
     """Fetch the recursive tree for `ref` (branch or SHA). Return the JSON payload."""
-    ref_for_api = urlquote(ref, safe="")
+    ref_for_api = urlquote(ref, safe="")  # encode '/' in names if present
     url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{ref_for_api}?recursive=1"
     headers = {"User-Agent": "repo_index/1.0"}
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
@@ -92,53 +84,59 @@ def _tree_url(owner: str, repo: str, ref: str) -> str:
     ref_segment = urlquote(ref, safe="/")
     return f"https://github.com/{owner}/{repo}/tree/{ref_segment}"
 
-def _render_markdown(
-    owner: str,
-    repo: str,
-    branch_label: str,
-    files: list[str],
-    *,
-    truncated: bool,
-    link_ref: str,
-) -> str:
-    """Render the clickable index. Show `branch_label`; generate links with `link_ref`."""
-    header_lines = [
-        "# Repository Index (GitHub-sourced)",
-        "",
-        f"_Updated: {_now_iso()}_",
-        "",
-        f"Repo: `{owner}/{repo}`  —  Branch: `{branch_label}`  —  Commit: `{link_ref[:7]}`  —  Root: `{ROOT.name}`  ",
-        f"GitHub tree: {_tree_url(owner, repo, branch_label)}",
-        "",
-    ]
-    if truncated:
-        header_lines += [
-            "> **Note:** GitHub API reported this tree as **truncated**. "
-            "Some very large repositories may omit deep entries in this listing.",
-            "",
-        ]
+def _group_by_top(paths: Iterable[str]) -> dict[str, list[str]]:
+    """Group file paths by their first path segment."""
+    buckets: dict[str, list[str]] = {}
+    for p in paths:
+        top = p.split("/", 1)[0]
+        buckets.setdefault(top, []).append(p)
+    return buckets
 
-    lines = header_lines[:]
+def _render_html(owner: str, repo: str, branch_label: str, files: list[str], *, link_ref: str, truncated: bool) -> str:
+    """Render the HTML link hub (grouped by top-level directory)."""
+    parts: list[str] = []
+    parts.append("<!doctype html>")
+    parts.append("<html><head><meta charset='utf-8'>")
+    parts.append(f"<title>{owner}/{repo} — {branch_label} @ {link_ref[:7]}</title>")
+    parts.append(
+        "<style>body{font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial}"
+        "code{background:#f6f8fa;padding:2px 4px;border-radius:4px}"
+        "h1{font-size:20px;margin:16px 0} h2{margin:20px 0 8px} ul{margin:6px 0 14px}"
+        "li{margin:2px 0}</style>"
+    )
+    parts.append("</head><body>")
+    parts.append(f"<h1>{owner}/{repo} — branch <code>{branch_label}</code>, commit <code>{link_ref[:7]}</code></h1>")
+    parts.append(f"<p><a href='{_tree_url(owner, repo, branch_label)}'>View GitHub tree for branch</a> · "
+                 f"Generated: {_now_iso()}</p>")
+    if truncated:
+        parts.append("<p><strong>Note:</strong> GitHub API reported this tree as <em>truncated</em>; "
+                     "some deep entries may be omitted.</p>")
+
     groups = _group_by_top(files)
     for top in sorted(groups, key=str.lower):
-        lines += [f"## {top}", ""]
+        parts.append(f"<h2>{top}</h2>")
+        parts.append("<ul>")
         for p in sorted(groups[top], key=str.lower):
-            lines.append(f"- {p} — [Blob]({_blob_url(owner, repo, link_ref, p)}) · [Raw]({_raw_url(owner, repo, link_ref, p)})")
-        lines.append("")
+            blob = _blob_url(owner, repo, link_ref, p)
+            raw = _raw_url(owner, repo, link_ref, p)
+            parts.append(f"<li><code>{p}</code> — <a href='{blob}'>Blob</a> · <a href='{raw}'>Raw</a></li>")
+        parts.append("</ul>")
 
-    return "\n".join(lines).rstrip() + "\n"
+    parts.append("</body></html>")
+    return "".join(parts)
 
 def main() -> int:
-    """Entry point: detect repo info, fetch tree at SHA, render, and write file."""
+    """Entry point: detect repo info, fetch tree at SHA, render HTML, and write docs/index.html."""
     owner, repo, branch_label = _detect_repo_info(ROOT)
     link_ref = os.environ.get("GITHUB_SHA") or _git(ROOT, "rev-parse", "HEAD") or branch_label
     payload = _gh_tree(owner, repo, link_ref)
     tree = payload.get("tree") or []
     truncated = bool(payload.get("truncated"))
     files = [e["path"] for e in tree if e.get("type") == "blob" and isinstance(e.get("path"), str)]
-    md = _render_markdown(owner, repo, branch_label, files, truncated=truncated, link_ref=link_ref)
-    OUT.write_text(md, encoding="utf-8")
-    print(f"Wrote {OUT}")
+    (ROOT / "docs").mkdir(exist_ok=True)
+    html = _render_html(owner, repo, branch_label, files, link_ref=link_ref, truncated=truncated)
+    OUT_HTML.write_text(html, encoding="utf-8")
+    print(f"Wrote {OUT_HTML}")
     return 0
 
 if __name__ == "__main__":
