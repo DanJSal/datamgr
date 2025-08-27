@@ -1,0 +1,47 @@
+name: Update REPO_INDEX.md
+
+on:
+  push:
+    branches: [""]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repo-index-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate REPO_INDEX.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python tools/repo_index.py
+          ls -la REPO_INDEX.md || true
+
+      - name: Commit changes (if any)
+        run: |
+          if [ -n "$(git status --porcelain -- REPO_INDEX.md)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add REPO_INDEX.md
+            git commit -m "ci: auto-update REPO_INDEX.md"
+            git push
+          else
+            echo "No changes to commit."
+          fi
