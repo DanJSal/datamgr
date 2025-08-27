@@ -2,7 +2,7 @@ name: Update REPO_INDEX.md
 
 on:
   push:
-    branches: [""]
+    branches: ["**"]
 
 permissions:
   contents: write
