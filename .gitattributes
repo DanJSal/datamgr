@@ -8,8 +8,6 @@
 *.toml text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
-
-# binaries you may add later
 *.h5        binary
 *.h5.enc    binary
 *.sqlite    binary
