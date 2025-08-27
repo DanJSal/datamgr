@@ -1,6 +1,9 @@
 {
-  "current": [],
-  "current_updated_at": "",
+  "current": [
+    "storage: PartStore skeleton",
+    "services: IngestService skeleton"
+  ],
+  "current_updated_at": "2025-08-27T03:35:27Z",
   "modules": {
     "datamgr/__init__.py": {
       "notes": [
@@ -206,14 +209,7 @@
       "updated_at": "2025-08-27T01:35:51Z"
     }
   },
-  "next": [],
-  "next_updated_at": "",
-  "statuses": [
-    "pending",
-    "skeleton",
-    "impl",
-    "tested",
-    "docs"
+  "next": [
+    "storage: DatasetCatalog skeleton"
   ],
-  "updated_at": "2025-08-27T01:35:58Z"
-}
+  "next_updated_at": 
