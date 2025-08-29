@@ -42,24 +42,16 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts
 
-          if [ -f artifacts/nodes.json ] && python - <<'PY'
-import json, pathlib, sys
-p = pathlib.Path(".dm/deltas.json")
-try:
-    d = json.loads(p.read_text(encoding="utf-8"))
-    sys.exit(0 if (d.get("paths") or d.get("modules")) else 1)
-except Exception:
-    sys.exit(1)
-PY
-          then
-            echo "[ci] delta manifest present -> delta-only collect"
+          # Decide delta vs full with a one-liner (avoids heredoc YAML weirdness)
+          if [ -f artifacts/nodes.json ] && python -c "import json,sys,pathlib; p=pathlib.Path('.dm/deltas.json'); sys.exit(0 if (p.exists() and (lambda d: (d.get('paths') or d.get('modules')))(json.loads(p.read_text(encoding='utf-8') or '{}'))) else 1)"; then
+            echo '[ci] delta manifest present -> delta-only collect'
             python tools/introspect_collect.py --dir datamgr --out artifacts --delta-only --deltas .dm/deltas.json
             python tools/nav_merge.py
-            AFFECT="artifacts/affected_fqids.txt"
+            AFFECT='artifacts/affected_fqids.txt'
           else
-            echo "[ci] no deltas (or first run) -> full collect"
+            echo '[ci] no deltas (or first run) -> full collect'
             python tools/introspect_collect.py --dir datamgr --out artifacts
-            AFFECT="/dev/null"
+            AFFECT='/dev/null'
           fi
 
           python tools/build_navigator.py \
