@@ -26,11 +26,15 @@ options:
 
 ## Current
 
-- (none)
+_Updated: 2025-08-29T01:41:15Z_
+
+- Review the navigator implementation plan (Master Plan — Introspection-Only Navigator v1.0)
 
 ## Next
 
-- (none)
+_Updated: 2025-08-29T01:41:15Z_
+
+- Implement the navigator (collector -> tracer -> HTML builder)
 
 ## Status Summary
 
