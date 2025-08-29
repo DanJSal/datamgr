@@ -1,0 +1,9 @@
+{
+  "files": [
+    "datamgr/navspec.py"
+  ],
+  "modules": [
+    "datamgr.navspec"
+  ],
+  "note": "Central ignore for tooling"
+}

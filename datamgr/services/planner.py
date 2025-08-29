@@ -1,4 +1,8 @@
-"""Placeholder module. Populate per SPEC.md (skeleton-first).
+"""datamgr.services.planner (stub).
+
+Skeleton per SPEC.md. Import-safe: no I/O, network, threads, or heavy work.
 """
-__all__: list[str] = []
-raise NotImplementedError("stub")
+from __future__ import annotations
+
+# Marker for tooling; safe to keep/remove later.
+__datamgr_stub__ = True

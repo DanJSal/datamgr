@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   build:
-    # Run unless the last commit msg includes [skip-index], OR run if manually dispatched with force=true
+    # Run unless last commit includes [skip-index], OR manual dispatch with force=true
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true' || (github.event_name == 'push' && !contains(github.event.head_commit.message, '[skip-index]')) }}
     runs-on: ubuntu-latest
     steps:
@@ -31,12 +31,51 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Generate site (docs/index.html)
+      - name: Lint (AST + import)
+        run: |
+          python tools/lint.py --dir datamgr
+
+      - name: Build navigator artifacts (delta-aware)
+        env:
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+
+          if [ -f artifacts/nodes.json ] && python - <<'PY'
+import json, pathlib, sys
+p = pathlib.Path(".dm/deltas.json")
+try:
+    d = json.loads(p.read_text(encoding="utf-8"))
+    sys.exit(0 if (d.get("paths") or d.get("modules")) else 1)
+except Exception:
+    sys.exit(1)
+PY
+          then
+            echo "[ci] delta manifest present -> delta-only collect"
+            python tools/introspect_collect.py --dir datamgr --out artifacts --delta-only --deltas .dm/deltas.json
+            python tools/nav_merge.py
+            AFFECT="artifacts/affected_fqids.txt"
+          else
+            echo "[ci] no deltas (or first run) -> full collect"
+            python tools/introspect_collect.py --dir datamgr --out artifacts
+            AFFECT="/dev/null"
+          fi
+
+          python tools/build_navigator.py \
+            --commit "${GITHUB_SHA::7}" \
+            --nodes artifacts/nodes.json \
+            --edges artifacts/edges.json \
+            --affected-fqids "$AFFECT" \
+            --out docs/api-nav \
+            --repo "$REPO"
+
+      - name: Generate repo index (always full)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python tools/repo_index.py
-          ls -la docs
+          ls -la docs || true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,4 +1,4 @@
-"""datamgr.util.fs (stub).
+"""datamgr.naavspec (stub).
 
 Skeleton per SPEC.md. Import-safe: no I/O, network, threads, or heavy work.
 """

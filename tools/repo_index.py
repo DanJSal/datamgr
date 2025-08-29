@@ -84,6 +84,14 @@ def _tree_url(owner: str, repo: str, ref: str) -> str:
     ref_segment = urlquote(ref, safe="/")
     return f"https://github.com/{owner}/{repo}/tree/{ref_segment}"
 
+# --- NEW: read deltas manifest (optional) ---
+def _load_deltas(root: Path) -> dict:
+    p = root / ".dm" / "deltas.json"
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {"paths": [], "modules": [], "note": ""}
+
 def _group_by_top(paths: Iterable[str]) -> dict[str, list[str]]:
     """Group file paths by their first path segment."""
     buckets: dict[str, list[str]] = {}
@@ -108,9 +116,48 @@ def _render_html(owner: str, repo: str, branch_label: str, files: list[str], *, 
     parts.append(f"<h1>{owner}/{repo} — branch <code>{branch_label}</code>, commit <code>{link_ref[:7]}</code></h1>")
     parts.append(f"<p><a href='{_tree_url(owner, repo, branch_label)}'>View GitHub tree for branch</a> · "
                  f"Generated: {_now_iso()}</p>")
+
+    # --- NEW: Quick links to the navigator ---
+    # GitHub Pages base path is '/<repo>/...'; the navigator uses a short commit dir.
+    short = link_ref[:7]
+    parts.append(
+        "<p><strong>Quick links:</strong> "
+        f"<a href='/{repo}/api-nav/latest/atlas.html'>Navigator (latest)</a> · "
+        f"<a href='/{repo}/api-nav/{short}/atlas.html'>Navigator (this commit)</a>"
+        "</p>"
+    )
+
     if truncated:
         parts.append("<p><strong>Note:</strong> GitHub API reported this tree as <em>truncated</em>; "
                      "some deep entries may be omitted.</p>")
+
+    # --- NEW: Deltas panel (optional, informational) ---
+    deltas = _load_deltas(ROOT)
+    if (deltas.get("paths") or deltas.get("modules") or deltas.get("note")):
+        parts.append("<details open><summary><strong>Deltas</strong></summary>")
+        if deltas.get("updated"):
+            parts.append(f"<p><em>Updated:</em> {deltas['updated']}</p>")
+        if deltas.get("note"):
+            parts.append(f"<p>{deltas['note']}</p>")
+        stamps = (deltas.get("stamps") or {})
+        sp = (stamps.get("paths") or {})
+        sm = (stamps.get("modules") or {})
+
+        if deltas.get("paths"):
+            parts.append("<p><em>Paths</em></p><ul>")
+            for p in deltas["paths"]:
+                t = sp.get(p, "")
+                when = f" <small>(touched {t})</small>" if t else ""
+                parts.append(f"<li><code>{p}</code>{when}</li>")
+            parts.append("</ul>")
+        if deltas.get("modules"):
+            parts.append("<p><em>Modules</em></p><ul>")
+            for m in deltas["modules"]:
+                t = sm.get(m, "")
+                when = f" <small>(touched {t})</small>" if t else ""
+                parts.append(f"<li><code>{m}</code>{when}</li>")
+            parts.append("</ul>")
+        parts.append("</details>")
 
     groups = _group_by_top(files)
     for top in sorted(groups, key=str.lower):
