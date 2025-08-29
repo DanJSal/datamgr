@@ -87,19 +87,33 @@ def main():
     atlas_lines.append("</ul>\n")
     write_html(snap / "atlas.html", "".join(atlas_lines))
 
-    # ---- regen set (for incremental node/edges pages)
-    regen = set(all_ids)
+    # ---- regen set (build-all if no/empty affected list)
+    all_set = set(all_ids)
+    regen = all_set  # default: full rebuild
+
+    base = None
     if a.affected_fqids:
-        base = set(Path(a.affected_fqids).read_text(encoding="utf-8").splitlines())
+        try:
+            base = {
+                ln.strip()
+                for ln in Path(a.affected_fqids).read_text(encoding="utf-8").splitlines()
+                if ln.strip()
+            }
+        except FileNotFoundError:
+            base = set()
+
+    if base:  # only narrow when we actually have affected ids
         neighbors = set()
+        # outbound neighbors
         for s in base:
-            neighbors.update(edges_out.get(s, []))         # outbound neighbors
-        for s, outs in edges_out.items():                   # inbound neighbors
+            neighbors.update(edges_out.get(s, []))
+        # inbound neighbors
+        for s, outs in edges_out.items():
             if any(t in base for t in outs):
                 neighbors.add(s)
-        regen = (base | neighbors) & set(all_ids)
+        regen = (base | neighbors) & all_set
 
-    # ---- 2) per-node pages (only regen set)
+# ---- 2) per-node pages (only regen set)
     for fq in sorted(regen):
         meta = node_index[fq]
         # hub
