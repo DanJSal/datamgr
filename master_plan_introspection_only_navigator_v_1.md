@@ -24,7 +24,7 @@
 
 # 4) Call Graph (observed first, static assist optional)
 
-- **Best approach:** **global **``** tracer** (+ `threading.setprofile`) with an allowlist on your package prefix.
+- **Best approach:** global `sys.setprofile` tracer (+ `threading.setprofile`) with an allowlist on your package prefix.
 - **Registry:** map **code objects → canonical IDs** once (follow `__wrapped__`).
 - **Edges:** collect `(src_id, dst_id)` where both are your package; count `samples`.
 - **Normalization:**
@@ -41,7 +41,7 @@
     "edges": [{"src":"pkg.mod.f","dst":"pkg.util.g","evidence":"observed","samples":42}]
   }
   ```
-- **Inbound (**``**\*\*\*\*\*\*\*\*) is ****derived**** at build time (reverse index).**
+- **Inbound (`called_by`) is derived at build time (reverse index).**
 - **Optional static assist:** bytecode scan (`dis`) adds `evidence:"static"` edges for uncovered paths; later merge by priority `observed > static > hint`.
 
 # 5) HTML Structure (machine-only)
@@ -53,7 +53,7 @@
   - Module function: `pkg.alpha.mod/f`
   - Class: `pkg.alpha.mod/C`
   - Method: `pkg.alpha.mod/C/m`
-- **Each node **``** includes only links + attributes:**
+- **Each node `<section>` includes only links + attributes:**
   - `data-fqid="pkg.alpha.mod.f"` (canonical id)
   - `data-kind="function|class|method"`
   - `data-module="pkg.alpha.mod"`
