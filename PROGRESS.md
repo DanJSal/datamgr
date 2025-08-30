@@ -1,40 +1,16 @@
 # Progress
 
-## CLI Reference
-
-```text
-usage: python tools/progress.py [-h] [--status STATUS] [--note NOTE] [--force] [--render-only] [--set-current ITEM [ITEM ...]] [--set-next ITEM [ITEM ...]] [--promote]
-                                [path]
-
-Update progress and regenerate PROGRESS.md
-
-positional arguments:
-  path                  Path to a single file to update. (default: None)
-
-options:
-  -h, --help            show this help message and exit
-  --status STATUS       New status. (default: None)
-  --note NOTE           Optional note to append. (default: )
-  --force               Allow status downgrade. (default: False)
-  --render-only         Only regenerate PROGRESS.md from progress.json. (default: False)
-  --set-current ITEM [ITEM ...]
-                        Replace the Current list with these item(s). (default: None)
-  --set-next ITEM [ITEM ...]
-                        Replace the Next list with these item(s). (default: None)
-  --promote             Before setting Next, move existing Next -> Current. (default: False)
-```
-
 ## Current
 
-_Updated: 2025-08-29T01:41:15Z_
+_Updated: 2025-08-30T17:33:55Z_
 
-- Review the navigator implementation plan (Master Plan — Introspection-Only Navigator v1.0)
+- (none)
 
 ## Next
 
-_Updated: 2025-08-29T01:41:15Z_
+_Updated: 2025-08-30T17:33:55Z_
 
-- Implement the navigator (collector -> tracer -> HTML builder)
+- (none)
 
 ## Status Summary
 

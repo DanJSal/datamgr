@@ -6,8 +6,15 @@ notes, and "Current/Next" queues, and renders a human-readable PROGRESS.md.
 It can also set statuses/notes for a single file path and manage Current/Next lists.
 """
 from __future__ import annotations
-import argparse, json, os, sys, time, pathlib
+
+import argparse
+import json
+import os
+import sys
+import time
+import pathlib
 from collections import defaultdict
+from typing import Any, Dict, List
 
 PROG = "python tools/progress.py"
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -15,6 +22,8 @@ TRACK = ROOT / "progress.json"
 OUT = ROOT / "PROGRESS.md"
 DEFAULT_STATUSES = ["pending", "skeleton", "impl", "tested", "docs"]
 
+
+# ----------------------------- CLI ---------------------------------
 def build_argparser() -> argparse.ArgumentParser:
     """Construct the CLI argument parser for updating progress and rendering output."""
     ap = argparse.ArgumentParser(
@@ -26,21 +35,42 @@ def build_argparser() -> argparse.ArgumentParser:
     ap.add_argument("--status", required=False, default=None, help="New status.")
     ap.add_argument("--note", default="", help="Optional note to append.")
     ap.add_argument("--force", action="store_true", help="Allow status downgrade.")
-    ap.add_argument("--render-only", action="store_true",
-                    help="Only regenerate PROGRESS.md from progress.json.")
-    ap.add_argument("--set-current", nargs="+", metavar="ITEM",
-                    help="Replace the Current list with these item(s).")
-    ap.add_argument("--set-next", nargs="+", metavar="ITEM",
-                    help="Replace the Next list with these item(s).")
-    ap.add_argument("--promote", action="store_true",
-                    help="Before setting Next, move existing Next -> Current.")
+    ap.add_argument(
+        "--render-only",
+        action="store_true",
+        help="Only regenerate PROGRESS.md from progress.json.",
+    )
+
+    # Allow clearing by accepting zero items AND explicit clear flags.
+    ap.add_argument(
+        "--set-current",
+        nargs="*",
+        metavar="ITEM",
+        help="Replace the Current list with these item(s). Empty = clear.",
+    )
+    ap.add_argument(
+        "--set-next",
+        nargs="*",
+        metavar="ITEM",
+        help="Replace the Next list with these item(s). Empty = clear.",
+    )
+    ap.add_argument("--clear-current", action="store_true", help="Clear Current list.")
+    ap.add_argument("--clear-next", action="store_true", help="Clear Next list.")
+    ap.add_argument(
+        "--promote",
+        action="store_true",
+        help="Before setting Next, move existing Next -> Current.",
+    )
     return ap
 
+
+# --------------------------- utilities ------------------------------
 def _now_iso() -> str:
     """Return current UTC time in ISO8601 (Z) format."""
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
-def load_state():
+
+def load_state() -> Dict[str, Any]:
     """Load progress state from progress.json, providing defaults if missing."""
     if TRACK.exists():
         with TRACK.open("r", encoding="utf-8") as f:
@@ -58,15 +88,20 @@ def load_state():
     data.setdefault("next_updated_at", "")
     return data
 
-def save_state(data):
+
+def save_state(data: Dict[str, Any]) -> None:
     """Persist progress state to progress.json, stamping an updated_at timestamp."""
     data["updated_at"] = _now_iso()
-    TRACK.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    TRACK.write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
 
 def rel(p: str) -> str:
     """Normalize a path to a repo-relative POSIX-style string."""
     rp = os.path.relpath(os.path.abspath(p), str(ROOT))
     return rp.replace("\\", "/")
+
 
 def validate_path(path: str) -> str:
     """Validate a single path: must be an existing file within the repo."""
@@ -83,17 +118,26 @@ def validate_path(path: str) -> str:
         raise SystemExit(f"Path is not a file: {path}")
     return rel(str(abs_p))
 
-def update_modules(data, paths, status, note, force=False):
+
+# --------------------------- mutations ------------------------------
+def update_modules(
+    data: Dict[str, Any], paths: List[str], status: str, note: str, *, force: bool = False
+) -> None:
     """Update status (and optionally append a note) for each path entry."""
     statuses = data["statuses"]
     if status not in statuses:
         raise SystemExit(f"Unknown status '{status}'. Known: {statuses}")
     now = _now_iso()
     for rp in paths:
-        cur = data["modules"].get(rp, {"status": "pending", "notes": [], "updated_at": ""})
+        cur = data["modules"].get(
+            rp, {"status": "pending", "notes": [], "updated_at": ""}
+        )
         if not force:
             if statuses.index(status) < statuses.index(cur["status"]):
-                print(f"Skip {rp}: '{status}' < current '{cur['status']}'. Use --force to downgrade.")
+                print(
+                    f"Skip {rp}: '{status}' < current '{cur['status']}'. "
+                    f"Use --force to downgrade."
+                )
                 continue
         cur["status"] = status
         if note:
@@ -101,12 +145,14 @@ def update_modules(data, paths, status, note, force=False):
         cur["updated_at"] = now
         data["modules"][rp] = cur
 
-def set_current(data, items):
+
+def set_current(data: Dict[str, Any], items: List[str]) -> None:
     """Replace the Current list and timestamp it."""
     data["current"] = list(items)
     data["current_updated_at"] = _now_iso()
 
-def set_next(data, items, *, promote=False):
+
+def set_next(data: Dict[str, Any], items: List[str], *, promote: bool = False) -> None:
     """Replace the Next list, optionally promoting the previous Next to Current."""
     now = _now_iso()
     if promote:
@@ -115,19 +161,24 @@ def set_next(data, items, *, promote=False):
     data["next"] = list(items)
     data["next_updated_at"] = now
 
+
+# ----------------------------- render -------------------------------
 def _latest_note(meta: dict) -> str:
     """Return the most recent note from a module's metadata, if any."""
     ns = meta.get("notes")
     return ns[-1] if isinstance(ns, list) and ns else ""
+
 
 def _ellipsize(s: str, maxlen: int = 160) -> str:
     """Trim a string to maxlen characters and add an ellipsis if needed."""
     s = (s or "").strip()
     return (s[: maxlen - 1] + "…") if len(s) > maxlen else s
 
+
 def _md_escape_cell(s: str) -> str:
     """Escape Markdown table cell delimiters and newlines."""
     return (s or "").replace("|", "\\|").replace("\n", " ")
+
 
 def render_latest_notes(modules: dict, limit: int = 20) -> str:
     """Render a Markdown table of the latest notes across modules."""
@@ -152,45 +203,52 @@ def render_latest_notes(modules: dict, limit: int = 20) -> str:
         body = ["_No notes yet. Add one with `--note`._"]
     return "\n".join(head + body) + "\n"
 
-def render_progress(data):
+
+def render_progress(data: Dict[str, Any]) -> str:
     """Render the full PROGRESS.md from the given state dict."""
-    buckets = defaultdict(list)
+    buckets: Dict[str, List[Any]] = defaultdict(list)
     for rp, meta in sorted(data["modules"].items()):
         head = rp.split("/", 2)[0]
         buckets[head].append((rp, meta))
     for d in ["datamgr", "tests"]:
         buckets.setdefault(d, [])
+
     sts = data["statuses"]
     totals = {s: 0 for s in sts}
     for _, meta in data["modules"].items():
         totals[meta["status"]] = totals.get(meta["status"], 0) + 1
     total_count = sum(totals.values()) or 0
-    lines = []
+
+    lines: List[str] = []
     lines.append("# Progress\n")
-    lines.append("## CLI Reference\n")
-    lines.append("```text")
-    lines.append(build_argparser().format_help().rstrip())
-    lines.append("```\n")
+
+    # (CLI banner removed; usage lives in docs/TOOL_USAGE.md)
+
     cur = data.get("current", []) or []
     nxt = data.get("next", []) or []
+
     lines.append("## Current\n")
     if data.get("current_updated_at"):
         lines.append(f"_Updated: {data['current_updated_at']}_\n")
     lines.extend([f"- {item}" for item in cur] or ["- (none)"])
     lines.append("")
+
     lines.append("## Next\n")
     if data.get("next_updated_at"):
         lines.append(f"_Updated: {data['next_updated_at']}_\n")
     lines.extend([f"- {item}" for item in nxt] or ["- (none)"])
     lines.append("")
+
     lines.append("## Status Summary\n")
     lines.append("Flow: `pending → skeleton → impl → tested → docs`\n")
     if total_count:
-        pct = lambda s: f"{(100.0 * totals.get(s, 0) / total_count):.1f}%"
+        def pct(s: str) -> str:
+            return f"{(100.0 * totals.get(s, 0) / total_count):.1f}%"
         summary = " | ".join(f"**{s}**: {totals.get(s, 0)} ({pct(s)})" for s in sts)
         lines.append(f"**Overall:** {summary}\n")
+
     lines.append("## By Area\n")
-    def badge(s): return f"`{s}`"
+    def badge(s: str) -> str: return f"`{s}`"
     for area in sorted(buckets):
         items = buckets[area]
         lines.append(f"### {area}\n")
@@ -199,37 +257,62 @@ def render_progress(data):
             lines.append("| _none_ |  |  |")
         else:
             for rp, meta in items:
-                lines.append(f"| `{rp}` | {badge(meta['status'])} | {meta.get('updated_at','')} |")
+                lines.append(
+                    f"| `{rp}` | {badge(meta['status'])} | {meta.get('updated_at','')} |"
+                )
         lines.append("")
+
     lines.append(render_latest_notes(data["modules"]))
     return "\n".join(lines) + "\n"
 
-def main(argv=None):
+
+# ----------------------------- main --------------------------------
+def main(argv: List[str] | None = None) -> int:
     """CLI entrypoint: parse args, mutate state as requested, and write outputs."""
     ap = build_argparser()
     args = ap.parse_args(argv)
-    if args.set_current and args.set_next and args.promote:
-        build_argparser().error(
+
+    # Presence detection (empty list means "clear")
+    present_current = (args.set_current is not None)
+    present_next = (args.set_next is not None)
+
+    # Disallow mixing both setters with --promote (presence-based)
+    if present_current and present_next and args.promote:
+        ap.error(
             "Ambiguous: --set-current with --set-next --promote. "
-            "Promote moves the old Next → Current; don’t also set Current in the same call."
+            "Promote moves old Next → Current; don’t also set Current in the same call."
         )
+
     data = load_state()
-    if args.set_current or args.set_next:
-        if args.set_current:
-            set_current(data, args.set_current)
-        if args.set_next:
-            promote_flag = bool(args.promote)
-            set_next(data, args.set_next, promote=promote_flag)
+
+    # Handle explicit clears or setters (empty list means clear)
+    if args.clear_current or args.clear_next or present_current or present_next:
+        if args.clear_current or present_current:
+            set_current(data, [] if args.clear_current else (args.set_current or []))
+        if args.clear_next or present_next:
+            set_next(data, [] if args.clear_next else (args.set_next or []), promote=bool(args.promote))
         save_state(data)
         OUT.write_text(render_progress(data), encoding="utf-8")
-        print(f"Updated Current/Next; wrote {OUT}")
+
+        which = []
+        if args.clear_current or (present_current and not args.set_current):
+            which.append("Current")
+        if args.clear_next or (present_next and not args.set_next):
+            which.append("Next")
+        label = " and ".join(which) if which else "lists"
+        print(f"Updated {label}; wrote {OUT}")
         return 0
+
+    # Render-only path
     if args.render_only:
         OUT.write_text(render_progress(data), encoding="utf-8")
         print(f"Rendered {OUT}")
         return 0
+
+    # Path/status update path
     if not args.path or not args.status:
-        ap.error("Provide a file path and --status (or use --set-current/--set-next or --render-only).")
+        ap.error("Provide a file path and --status (or use --set-current/--set-next/--clear-*/--render-only).")
+
     rp = validate_path(args.path)
     update_modules(data, [rp], args.status, args.note, force=args.force)
     save_state(data)
@@ -237,6 +320,7 @@ def main(argv=None):
     print(f"Updated {rp} -> {args.status}")
     print(f"Wrote {OUT}")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
