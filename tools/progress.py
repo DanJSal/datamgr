@@ -2,8 +2,14 @@
 """Render and maintain project progress.
 
 This script updates a JSON state file (progress.json) tracking module statuses,
-notes, and "Current/Next" queues, and renders a human-readable PROGRESS.md.
-It can also set statuses/notes for a single file path and manage Current/Next lists.
+notes, and **Current / Previous / Next** queues, and renders a human-readable
+PROGRESS.md. It can also set statuses/notes for a single file path and manage
+the worklists.
+
+Changes vs. prior version:
+- Adds a **Previous** list (with set/clear).
+- `--promote` now shifts **Current → Previous** and **Next → Current**
+  before (optionally) setting a new Next list.
 """
 from __future__ import annotations
 
@@ -49,17 +55,24 @@ def build_argparser() -> argparse.ArgumentParser:
         help="Replace the Current list with these item(s). Empty = clear.",
     )
     ap.add_argument(
+        "--set-previous",
+        nargs="*",
+        metavar="ITEM",
+        help="Replace the Previous list with these item(s). Empty = clear.",
+    )
+    ap.add_argument(
         "--set-next",
         nargs="*",
         metavar="ITEM",
         help="Replace the Next list with these item(s). Empty = clear.",
     )
     ap.add_argument("--clear-current", action="store_true", help="Clear Current list.")
+    ap.add_argument("--clear-previous", action="store_true", help="Clear Previous list.")
     ap.add_argument("--clear-next", action="store_true", help="Clear Next list.")
     ap.add_argument(
         "--promote",
         action="store_true",
-        help="Before setting Next, move existing Next -> Current.",
+        help="Before setting Next, move Current → Previous and Next → Current.",
     )
     return ap
 
@@ -77,14 +90,19 @@ def load_state() -> Dict[str, Any]:
             data = json.load(f)
     else:
         data = {"statuses": DEFAULT_STATUSES, "modules": {}}
+
     if "statuses" not in data:
         data["statuses"] = DEFAULT_STATUSES
     if "modules" not in data:
         data["modules"] = {}
+
+    # Worklists + timestamps
     data.setdefault("current", [])
+    data.setdefault("previous", [])
     data.setdefault("next", [])
     data.setdefault("updated_at", "")
     data.setdefault("current_updated_at", "")
+    data.setdefault("previous_updated_at", "")
     data.setdefault("next_updated_at", "")
     return data
 
@@ -152,12 +170,23 @@ def set_current(data: Dict[str, Any], items: List[str]) -> None:
     data["current_updated_at"] = _now_iso()
 
 
+def set_previous(data: Dict[str, Any], items: List[str]) -> None:
+    """Replace the Previous list and timestamp it."""
+    data["previous"] = list(items)
+    data["previous_updated_at"] = _now_iso()
+
+
 def set_next(data: Dict[str, Any], items: List[str], *, promote: bool = False) -> None:
-    """Replace the Next list, optionally promoting the previous Next to Current."""
+    """Replace the Next list; if promoting, shift Current→Previous and Next→Current."""
     now = _now_iso()
     if promote:
+        # Current → Previous
+        data["previous"] = list(data.get("current", []))
+        data["previous_updated_at"] = now
+        # Next → Current
         data["current"] = list(data.get("next", []))
         data["current_updated_at"] = now
+    # Now set (or keep) Next
     data["next"] = list(items)
     data["next_updated_at"] = now
 
@@ -222,15 +251,20 @@ def render_progress(data: Dict[str, Any]) -> str:
     lines: List[str] = []
     lines.append("# Progress\n")
 
-    # (CLI banner removed; usage lives in docs/TOOL_USAGE.md)
-
     cur = data.get("current", []) or []
+    prv = data.get("previous", []) or []
     nxt = data.get("next", []) or []
 
     lines.append("## Current\n")
     if data.get("current_updated_at"):
         lines.append(f"_Updated: {data['current_updated_at']}_\n")
     lines.extend([f"- {item}" for item in cur] or ["- (none)"])
+    lines.append("")
+
+    lines.append("## Previous\n")
+    if data.get("previous_updated_at"):
+        lines.append(f"_Updated: {data['previous_updated_at']}_\n")
+    lines.extend([f"- {item}" for item in prv] or ["- (none)"])
     lines.append("")
 
     lines.append("## Next\n")
@@ -274,6 +308,7 @@ def main(argv: List[str] | None = None) -> int:
 
     # Presence detection (empty list means "clear")
     present_current = (args.set_current is not None)
+    present_previous = (args.set_previous is not None)
     present_next = (args.set_next is not None)
 
     # Disallow mixing both setters with --promote (presence-based)
@@ -282,24 +317,41 @@ def main(argv: List[str] | None = None) -> int:
             "Ambiguous: --set-current with --set-next --promote. "
             "Promote moves old Next → Current; don’t also set Current in the same call."
         )
+    # Also disallow setting Previous while promoting (Previous is derived from Current)
+    if present_previous and args.promote:
+        ap.error(
+            "Ambiguous: --set-previous with --promote. "
+            "Promote sets Previous from Current; don’t also set Previous in the same call."
+        )
 
     data = load_state()
 
-    # Handle explicit clears or setters (empty list means clear)
-    if args.clear_current or args.clear_next or present_current or present_next:
+    # Handle explicit clears or setters (empty list means clear) and/or promotion.
+    if (
+        args.clear_current or args.clear_previous or args.clear_next
+        or present_current or present_previous or present_next
+        or args.promote
+    ):
         if args.clear_current or present_current:
             set_current(data, [] if args.clear_current else (args.set_current or []))
-        if args.clear_next or present_next:
-            set_next(data, [] if args.clear_next else (args.set_next or []), promote=bool(args.promote))
+        if args.clear_previous or present_previous:
+            set_previous(data, [] if args.clear_previous else (args.set_previous or []))
+        if args.clear_next or present_next or args.promote:
+            # If only promoting, keep existing Next items while shifting.
+            next_items = [] if args.clear_next else (args.set_next or data.get("next", []))
+            set_next(data, next_items, promote=bool(args.promote))
+
         save_state(data)
         OUT.write_text(render_progress(data), encoding="utf-8")
 
         which = []
         if args.clear_current or (present_current and not args.set_current):
             which.append("Current")
+        if args.clear_previous or (present_previous and not args.set_previous):
+            which.append("Previous")
         if args.clear_next or (present_next and not args.set_next):
             which.append("Next")
-        label = " and ".join(which) if which else "lists"
+        label = " and ".join(which) if which else ("lists" if not args.promote else "lists (promoted)")
         print(f"Updated {label}; wrote {OUT}")
         return 0
 
@@ -311,7 +363,10 @@ def main(argv: List[str] | None = None) -> int:
 
     # Path/status update path
     if not args.path or not args.status:
-        ap.error("Provide a file path and --status (or use --set-current/--set-next/--clear-*/--render-only).")
+        ap.error(
+            "Provide a file path and --status "
+            "(or use --set-current/--set-previous/--set-next/--clear-*/--promote/--render-only)."
+        )
 
     rp = validate_path(args.path)
     update_modules(data, [rp], args.status, args.note, force=args.force)

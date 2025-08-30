@@ -125,27 +125,28 @@ python tools/deltas.py clear
 ---
 
 ## Progress (status document)
-
+Track per-file status and maintain **Current / Previous / Next** lists. Writes `progress.json` and `PROGRESS.md`.
 ```bash
-# Update a file's status (optional --note, use --force to allow downgrade)
-python tools/progress.py datamgr/api/navigator.py --status impl --note "sketched API"
+# Status / note (PATH must be an existing repo file)
+python tools/progress.py PATH --status {pending|skeleton|impl|tested|docs} [--note "msg"] [--force]
 
-# Render from progress.json only
+# Render only
 python tools/progress.py --render-only
 
-# Set Current/Next lists (replace lists entirely)
-python tools/progress.py --set-current "Implement Package Atlas" "Write storage adapter"
-python tools/progress.py --set-next "Planner v0" "Merge service"
+# Worklists — replace (empty to clear)
+python tools/progress.py --set-current  [ITEM...]
+python tools/progress.py --set-previous [ITEM...]
+python tools/progress.py --set-next     [ITEM...]
+# Or explicit clears
+python tools/progress.py --clear-current --clear-previous --clear-next
 
-# Clear lists (either explicit flags or empty setters)
-python tools/progress.py --clear-current --clear-next
-python tools/progress.py --set-current     # (clears Current)
-python tools/progress.py --set-next        # (clears Next)
-
-# Promote previous Next -> Current, then set a new Next list
-python tools/progress.py --promote --set-next "Merge service"
-
+# Promote (Current→Previous, Next→Current), then optionally set new Next
+python tools/progress.py --promote [--set-next ITEM...]
 ```
+**Warnings**
+- Don’t combine `--set-current` with `--set-next --promote` (error).
+- Don’t combine `--set-previous` with `--promote` (Previous is set automatically).
+- Status downgrades need `--force`. Use repo-root paths.
 
 ---
 
@@ -176,4 +177,3 @@ python tools/deltas.py clear
 - All commands run from the **repo root**.
 - Tools honor `.dm/ignore.json` (single source of ignore) and keep builds incremental via `.dm/deltas.json`.
 - Do **not** commit generated outputs: `artifacts/`, `docs/api-nav/`, `docs/index.html`.
-- Don’t combine `--set-current` and `--set-next` with `--promote` in the same call (the tool will error).
