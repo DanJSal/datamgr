@@ -41,13 +41,14 @@ PY
 merge:
 	python tools/nav_merge.py
 
-nav:
-	AF=$$( [[ -s $(ARTIFACTS)/affected_fqids.txt ]] && echo "$(ARTIFACTS)/affected_fqids.txt" || echo "/dev/null" )
-	python tools/build_navigator.py \
+atlas:
+	AF=$$( [[ -s $(ARTIFACTS)/affected_fqids.txt ]] && echo "$(ARTIFACTS)/affected_fqids.txt" || echo "" )
+	if [ -n "$$AF" ]; then AFOPT="--affected-fqids $$AF"; else AFOPT=""; fi
+	python tools/build_package_atlas.py \
 	  --commit "$(SHA)" \
 	  --nodes $(ARTIFACTS)/nodes.json \
 	  --edges $(ARTIFACTS)/edges.json \
-	  --affected-fqids $$AF \
+	  $$AFOPT \
 	  --out docs/api-nav \
 	  --repo "$(REPO)"
 

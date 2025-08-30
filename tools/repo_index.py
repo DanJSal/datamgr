@@ -117,14 +117,11 @@ def _render_html(owner: str, repo: str, branch_label: str, files: list[str], *, 
     parts.append(f"<p><a href='{_tree_url(owner, repo, branch_label)}'>View GitHub tree for branch</a> · "
                  f"Generated: {_now_iso()}</p>")
 
-    # --- NEW: Quick links to the navigator ---
+    # --- NEW: Quick link to the navigator ---
     # GitHub Pages base path is '/<repo>/...'; the navigator uses a short commit dir.
-    short = link_ref[:7]
     parts.append(
-        "<p><strong>Quick links:</strong> "
-        f"<a href='/{repo}/api-nav/latest/atlas.html'>Navigator (latest)</a> · "
-        f"<a href='/{repo}/api-nav/{short}/atlas.html'>Navigator (this commit)</a>"
-        "</p>"
+        f"<p><strong>Quick links:</strong> "
+        f"<a href='/{repo}/api-nav/latest/atlas.html'>Package Atlas</a></p>"
     )
 
     if truncated:

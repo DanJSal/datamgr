@@ -35,7 +35,7 @@ jobs:
         run: |
           python tools/lint.py --dir datamgr
 
-      - name: Build navigator artifacts (delta-aware)
+      - name: Build Package Atlas artifacts (delta-aware)
         env:
           REPO: ${{ github.event.repository.name }}
         run: |
@@ -50,10 +50,10 @@ jobs:
           else
             echo '[ci] no deltas (or first run) -> full collect'
             python tools/introspect_collect.py --dir datamgr --out artifacts
-            AFFECT_OPT=""   # IMPORTANT: do not pass --affected-fqids
+            AFFECT_OPT=""
           fi
 
-          python tools/build_navigator.py \
+          python tools/build_package_atlas.py \
             --commit "${GITHUB_SHA::7}" \
             --nodes artifacts/nodes.json \
             --edges artifacts/edges.json \

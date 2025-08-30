@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Builds the one-navigator HTML set.
+Builds the package atlas HTML set.
 
 docs/api-nav/<commit>/
   atlas.html
@@ -12,7 +12,7 @@ docs/api-nav/<commit>/
 and mirrors to docs/api-nav/latest/
 
 Usage (repo/package both 'datamgr', package at repo root):
-  python tools/build_navigator.py \
+  python tools/build_package_atlas.py \
     --commit "$(git rev-parse --short HEAD)" \
     --nodes artifacts/nodes.json \
     --edges artifacts/edges.json \
@@ -35,14 +35,14 @@ def parse_args():
     p.add_argument("--affected-fqids", default="", help="newline-delimited file; if set, only rebuild affected nodes + neighbors (atlas always full)")
     return p.parse_args()
 
-def site_root(repo): return f"/{repo}"
-def nav_header(repo):
-    root = site_root(repo)
-    return (f'<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<nav aria-label="breadcrumbs" style="margin:8px 0">'
-            f'<a rel="up" href="{root}/">← Back to Repo Index</a>'
-            f' · <a href="{root}/api-nav/latest/atlas.html">Atlas (latest)</a>'
-            f"</nav>")
+def site_root(repo):
+    return f"/{repo}"
+
+def nav_header(repo: str) -> str:
+    return (
+        f'<p><a href="/{repo}/">← Back to Repo Index</a> · '
+        f'<a href="/{repo}/api-nav/latest/atlas.html">Package Atlas</a></p>'
+    )
 
 def write_html(path: Path, body: str):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -76,14 +76,13 @@ def main():
     all_ids = sorted(node_index.keys())
 
     out_base = Path(a.out)
-    snap = out_base / a.commit
-    latest = out_base / "latest"
+    snap = out_base / "latest"  # <— use latest as the only output
     snap.mkdir(parents=True, exist_ok=True)
 
-    # ---- 1) atlas (always rebuilt, link-only)
+    # 1) atlas (link to latest)
     atlas_lines = [nav_header(a.repo), "<ul>\n"]
     for fq in all_ids:
-        atlas_lines.append(f'  <li><a href="{site_root(a.repo)}/api-nav/{a.commit}/node/{escape(fq)}.html">{escape(fq)}</a></li>\n')
+        atlas_lines.append(f'  <li><a href="/{a.repo}/api-nav/latest/node/{escape(fq)}.html">{escape(fq)}</a></li>\n')
     atlas_lines.append("</ul>\n")
     write_html(snap / "atlas.html", "".join(atlas_lines))
 
@@ -118,11 +117,13 @@ def main():
         meta = node_index[fq]
         # hub
         hub = [nav_header(a.repo), "<ul>\n"]
-        hub.append(f'  <li><a rel="meta" href="{site_root(a.repo)}/api-nav/{a.commit}/meta/{escape(fq)}.html">meta</a></li>\n')
+        hub.append(f'  <li><a rel="meta" href="/{a.repo}/api-nav/latest/meta/{escape(fq)}.html">meta</a></li>\n')
         if meta.get("has_body"):
-            hub.append(f'  <li><a rel="body" href="{site_root(a.repo)}/api-nav/{a.commit}/body/{escape(fq)}.html">body</a></li>\n')
-        hub.append(f'  <li><a rel="out" href="{site_root(a.repo)}/api-nav/{a.commit}/edges/{escape(fq)}/out.html">calls →</a></li>\n')
-        hub.append(f'  <li><a rel="in"  href="{site_root(a.repo)}/api-nav/{a.commit}/edges/{escape(fq)}/in.html">← called-by</a></li>\n')
+            hub.append(f'  <li><a rel="body" href="/{a.repo}/api-nav/latest/body/{escape(fq)}.html">body</a></li>\n')
+        hub.append(f'  <li><a rel="out" href="/{a.repo}/api-nav/latest/edges/{escape(fq)}/out.html">calls →</a></li>\n')
+        hub.append(
+            f'  <li><a rel="in"  href="/{a.repo}/api-nav/latest/edges/{escape(fq)}/in.html">← called-by</a></li>\n')
+
         sp, s0, s1 = meta.get("source_path"), meta.get("source_start"), meta.get("source_end")
         if sp and s0 and s1:
             hub.append(f'  <li><a rel="src" href="https://github.com/danjsal/datamgr/blob/{a.commit}/{escape(sp)}#L{s0}-L{s1}">source</a></li>\n')
@@ -158,7 +159,7 @@ def main():
                 chunk = seq[i:i+size]; i += size
                 body = [nav_header(a.repo), "<ul>\n"]
                 for t in chunk:
-                    body.append(f'  <li><a href="{site_root(a.repo)}/api-nav/{a.commit}/node/{escape(t)}.html">{escape(t)}</a></li>\n')
+                    body.append(f'  <li><a href="/{a.repo}/api-nav/latest/node/{escape(t)}.html">{escape(t)}</a></li>\n')
                 body.append("</ul>\n")
                 name = f"{direction}.html" if page == 1 else f"{direction}.{page}.html"
                 write_html(base / name, "".join(body)); page += 1
@@ -166,11 +167,7 @@ def main():
         write_edges("out", sorted(set(edges_out.get(fq, []))))
         write_edges("in",  sorted(set(edges_in.get(fq, []))))
 
-    # ---- 3) mirror to latest
-    if latest.exists():
-        shutil.rmtree(latest)
-    shutil.copytree(snap, latest)
-    print(f"[build] wrote {snap} and mirrored to {latest}")
+    print(f"[build] wrote {snap} (Package Atlas)")
 
 if __name__ == "__main__":
     main()
